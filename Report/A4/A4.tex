@@ -1,0 +1,69 @@
+\documentclass{article}
+    \usepackage[utf8]{inputenc}
+    \usepackage{listings}
+    
+    \title{Assignment 4}
+    \author{Yang Gao\\yanggao@kth.se}
+    \date{May 2018}
+    
+    \usepackage{natbib}
+    \usepackage{graphicx}
+    \usepackage{enumitem}
+    \usepackage{amsmath}
+    \usepackage{enumitem}
+    
+    \begin{document}
+    \maketitle
+    \section{Code verification}
+    following is the corrected code for backwardfix.m
+    \begin{lstlisting}[language=Matlab]
+    T=size(pX,2);
+    nS=mc.nStates;
+    q=mc.InitialProb; 
+    A=mc.TransitionProb; 
+    fin=mc.finiteDuration;
+    betaHat=zeros(nS,T); 
+    if ~fin
+        betaHat(:,T)=1/c(T);
+    else
+        for i=1:nS
+            betaHat(i,T)=A(i,nS+1)/(c(T)*c(T+1));
+        end
+    end
+    for t=T-1:-1:1 
+        for i=1:nS
+            summ=0;
+            for j=1:nS
+                summ=summ+A(i,j)*pX(j,t+1)*betaHat(j,t+1); 
+            end
+            betaHat(i,t)=(1/c(t))*summ; 
+        end
+    end
+    \end{lstlisting}
+    \noindent The code was verified by comparing with he 
+    example given in the text
+    \noindent Following is the error list
+    \noindent \\Issues
+    \begin{itemize}
+        \item The \texttt{fin} variable should stand for 
+        \texttt{mc.finiteDuration} instead of \texttt{\char`\~mc.finiteDuration}
+        \item for infinite HMM, the \texttt{betaHat} was changed to \texttt{1/c(T)}
+        \item for finite HMM initialization, it should be \texttt{c(T)*c(T+1)} instead of \texttt{(c(T)+c(T+1)}
+        \item for the second loop, the looping should from \texttt{T-1:-1:1} instead of \texttt{1:1:T-1}
+        \item also change the sum from \texttt{A(j,i)} to \texttt{A(i,j)}
+      \end{itemize}
+      \section{Speech Database}
+      \noindent The following words were recorded, with each being recorded 15 times
+      \begin{itemize}
+        \item Turn on
+        \item Turn off
+        \item Yes
+        \item No
+        \item First
+        \item Second 
+        \item Third
+        \item Alarm
+      \end{itemize}
+    \bibliographystyle{plain}
+    \bibliography{references} 
+    \end{document}
